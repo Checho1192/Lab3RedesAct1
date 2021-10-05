@@ -62,11 +62,12 @@ def enviarArchivo(s, conexion, nConexiones, nArchivo):
     print(f"Archivo enviado al cliente {nombreThread} {conexion}")
 
 
-nArchivo = input(
-    "Ingrese el nombre del archivo a enviar (Ej. 100MB.test): ")
+#nArchivo = input("Ingrese el nombre del archivo a enviar (Ej. 100MB.test): ")
 threadsClientes = []
+nArchivo = '100MB.test'
 conexionesClientes = {}
-numeroClientes = int(input("Ingrese el numero de clientes: "))
+#numeroClientes = int(input("Ingrese el numero de clientes: "))
+numeroClientes = 25
 host = input("\nIngrese la direccion IP del servidor: ")
 s = socket.socket()
 port = 5001

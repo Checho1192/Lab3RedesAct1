@@ -47,7 +47,8 @@ def recibirArchivo(s, numeroConexiones, nombreArchivo, paquetes):
 
 
 print("Ingresar un numero de clientes")
-numeroClientes = int(input())
+#numeroClientes = int(input())
+numeroClientes = 25
 conexiones = []
 tiempos = []
 fallas = []
