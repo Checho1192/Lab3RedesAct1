@@ -74,38 +74,41 @@ port = 5001
 print(f"[+] Connecting to {host}:{port}")
 s.bind((host, port))
 print("[+] Connected.")
-for i in range(numeroClientes):
+j = 0
+while 1:
     socketClienteActual, conexion = s.accept()
     print("Conexion de:", conexion)
-    t = threading.Thread(name=f"Cliente{i}", target=enviarArchivo, args=(
+    t = threading.Thread(name=f"Cliente{j}", target=enviarArchivo, args=(
         socketClienteActual, conexion, numeroClientes, nArchivo))
     threadsClientes.append(t)
-    conexionesClientes[f'Cliente{i}'] = conexion
-for thread in threadsClientes:
-    thread.start()
+    conexionesClientes[f'Cliente{j}'] = conexion
+    j += 1
+    if len(threadsClientes) == numeroClientes:
+        for thread in threadsClientes:
+            thread.start()
 
-for thread in threadsClientes:
-    thread.join()
+        for thread in threadsClientes:
+            thread.join()
 
-fechaStr = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-log = open(f"Logs/{fechaStr}.txt", "w")
+        fechaStr = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+        log = open(f"Logs/{fechaStr}.txt", "w")
 
-log.write(f"Nombre archivo: {nArchivo}\n")
-tamanioArchivo = os.path.getsize(nArchivo)
-log.write(f"Tamanio archivo: {tamanioArchivo} bytes\n")
+        log.write(f"Nombre archivo: {nArchivo}\n")
+        tamanioArchivo = os.path.getsize(nArchivo)
+        log.write(f"Tamanio archivo: {tamanioArchivo} bytes\n")
 
-log.write("Clientes de transferencia:\n")
-for i in range(numeroClientes):
-    log.write(f"Cliente {i}: {conexionesClientes[f'Cliente{i}']}\n")
+        log.write("Clientes de transferencia:\n")
+        for i in range(numeroClientes):
+            log.write(f"Cliente {i}: {conexionesClientes[f'Cliente{i}']}\n")
 
-log.write("Resultados comprobacion hash:\n")
-for i in range(numeroClientes):
-    log.write(f"Cliente {i}: {logHashes[f'Cliente{i}']}\n")
-log.write("\n")
+        log.write("Resultados comprobacion hash:\n")
+        for i in range(numeroClientes):
+            log.write(f"Cliente {i}: {logHashes[f'Cliente{i}']}\n")
+        log.write("\n")
 
-log.write("Tiempos transferencias:\n")
-for i in range(numeroClientes):
-    log.write(f"Cliente {i}: {logTransmisiones[f'Cliente{i}']}ms\n")
-log.write("\n")
+        log.write("Tiempos transferencias:\n")
+        for i in range(numeroClientes):
+            log.write(f"Cliente {i}: {logTransmisiones[f'Cliente{i}']}ms\n")
+        log.write("\n")
 
-log.close()
+        log.close()

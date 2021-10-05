@@ -56,7 +56,8 @@ numeroConexiones = 0
 paquetes = 0
 nombreArchivo = ""
 print("Ingresar la dirección IP del servidor")
-ipAdressServer = input()
+#ipAdressServer = input()
+ipAdressServer = '192.168.10.19'
 port = 5001
 
 clientes = []
