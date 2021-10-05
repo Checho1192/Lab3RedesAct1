@@ -7,7 +7,7 @@ from datetime import datetime
 
 
 def recibirArchivo(s, numeroConexiones, nombreArchivo, paquetes):
-    print("Presione cualquier caracter para inicar la recepción")
+    print("Presione enter para iniciar la recepcion")
     input()
     s.send(b"")
     print("Iniciando recepción")
