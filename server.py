@@ -22,32 +22,7 @@ def hash_file(filename):
     return h.hexdigest()
 
 
-def log(logTransmisiones, nombreArchivo, nConexiones, conexionesClientes):
-    fechaStr = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    log = open(f"Logs/{fechaStr}.txt", "w")
-
-    log.write(f"Nombre archivo: {nombreArchivo}\n")
-    tamanioArchivo = os.path.getsize(nombreArchivo)
-    log.write(f"Tamanio archivo: {tamanioArchivo} bytes\n")
-
-    log.write("Clientes de transferencia:\n")
-    for i in range(nConexiones):
-        log.write(f"Cliente {i}: {conexionesClientes[f'Cliente{i}']}\n")
-
-    log.write("Resultados comprobacion hash:\n")
-    for i in range(nConexiones):
-        log.write(f"Cliente {i}: {logHashes[f'Cliente{i}']}\n")
-    log.write("\n")
-
-    log.write("Tiempos transferencias:\n")
-    for i in range(nConexiones):
-        log.write(f"Cliente {i}: {logTransmisiones[f'Cliente{i}']}ms\n")
-    log.write("\n")
-
-    log.close()
-
-
-def cliente(s, conexion, nConexiones, nArchivo):
+def enviarArchivo(s, conexion, nConexiones, nArchivo):
     nombreThread = threading.currentThread().getName()
     global numeroThreadsProcesando
     s.recv(1024).decode()
@@ -87,31 +62,49 @@ def cliente(s, conexion, nConexiones, nArchivo):
     print(f"Archivo enviado al cliente {nombreThread} {conexion}")
 
 
-def main():
-    nArchivo = input(
-        "Ingrese el nombre del archivo a enviar (Ej. 100MB.test): ")
-    threadsClientes = []
-    conexionesClientes = {}
-    numeroClientes = int(input("Ingrese el numero de clientes: "))
-    host = input("\nIngrese la direccion IP del servidor: ")
-    s = socket.socket()
-    port = 5001
-    print(f"[+] Connecting to {host}:{port}")
-    s.bind((host, port))
-    print("[+] Connected.")
-    for i in range(numeroClientes):
-        socketClienteActual, conexion = s.accept()
-        print("Conexion de:", conexion)
-        t = threading.Thread(name=f"Cliente{i}", target=cliente, args=(
-            socketClienteActual, conexion, numeroClientes, nArchivo))
-        threadsClientes.append(t)
-        conexionesClientes[f'Cliente{i}'] = conexion
-    for thread in threadsClientes:
-        thread.start()
+nArchivo = input(
+    "Ingrese el nombre del archivo a enviar (Ej. 100MB.test): ")
+threadsClientes = []
+conexionesClientes = {}
+numeroClientes = int(input("Ingrese el numero de clientes: "))
+host = input("\nIngrese la direccion IP del servidor: ")
+s = socket.socket()
+port = 5001
+print(f"[+] Connecting to {host}:{port}")
+s.bind((host, port))
+print("[+] Connected.")
+for i in range(numeroClientes):
+    socketClienteActual, conexion = s.accept()
+    print("Conexion de:", conexion)
+    t = threading.Thread(name=f"Cliente{i}", target=enviarArchivo, args=(
+        socketClienteActual, conexion, numeroClientes, nArchivo))
+    threadsClientes.append(t)
+    conexionesClientes[f'Cliente{i}'] = conexion
+for thread in threadsClientes:
+    thread.start()
 
-    for thread in threadsClientes:
-        thread.join()
+for thread in threadsClientes:
+    thread.join()
 
-    log(logTransmisiones, nArchivo, numeroClientes, conexionesClientes)
+fechaStr = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+log = open(f"Logs/{fechaStr}.txt", "w")
 
-main()
+log.write(f"Nombre archivo: {nArchivo}\n")
+tamanioArchivo = os.path.getsize(nArchivo)
+log.write(f"Tamanio archivo: {tamanioArchivo} bytes\n")
+
+log.write("Clientes de transferencia:\n")
+for i in range(numeroClientes):
+    log.write(f"Cliente {i}: {conexionesClientes[f'Cliente{i}']}\n")
+
+log.write("Resultados comprobacion hash:\n")
+for i in range(numeroClientes):
+    log.write(f"Cliente {i}: {logHashes[f'Cliente{i}']}\n")
+log.write("\n")
+
+log.write("Tiempos transferencias:\n")
+for i in range(numeroClientes):
+    log.write(f"Cliente {i}: {logTransmisiones[f'Cliente{i}']}ms\n")
+log.write("\n")
+
+log.close()
