@@ -58,13 +58,17 @@ print("Ingresar la dirección IP del servidor")
 ipAdressServer = input()
 port = 1234
 
+clientes = []
 for i in range(numeroClientes):
     newSocket = socket.socket()
-    newSocket.connect(ipAdressServer, port)
+    newSocket.connect((ipAdressServer, port))
     newCliente = threading.Thread(recibirArchivo(
         newSocket, numeroConexiones, nombreArchivo, paquetes))
+    clientes.append(newCliente)
     newCliente.start()
-    newCliente.join()
+
+for i in clientes:
+    i.join()
 date = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 archivoLog = open(f"{date}.txt")
 archivoLog.write(f"Nombre del archivo: {nombreArchivo}\n")
