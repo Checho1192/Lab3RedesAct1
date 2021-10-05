@@ -1,0 +1,4 @@
+venv
+*.test
+100MB.test
+250MB.test
