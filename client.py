@@ -56,7 +56,7 @@ paquetes = 0
 nombreArchivo = ""
 print("Ingresar la dirección IP del servidor")
 ipAdressServer = input()
-port = 1234
+port = 5001
 
 clientes = []
 for i in range(numeroClientes):
